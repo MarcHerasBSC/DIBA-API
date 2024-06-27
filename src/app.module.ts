@@ -12,8 +12,8 @@ import { Book } from './book.entity';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: '84.88.187.146',
-        port: 5432,
+        host: configService.get('DATABASE_URL'),
+        port: configService.get('DATABASE_PORT'),
         username: configService.get('DATABASE_USER'),
         password: configService.get('DATABASE_PWRD'),
         database: 'DIBA-BSC',
