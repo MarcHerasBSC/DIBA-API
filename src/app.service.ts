@@ -17,19 +17,35 @@ export class BooksService {
     private booksRepository: Repository<Book>,
   ) {}
 
-  async getRelatedBooks(id: string): Promise<any> { //Promise<Book[]> {
-    // Here you would write your logic to fetch related books from the database
-    // This is just a placeholder and should be replaced with actual implementation
-    const relatedBooks = await this.booksRepository.query(`SELECT title FROM books b WHERE record_n=${id}`);
-    //const relatedBooks = "[{ id: 01854432, title: 'The Hunger Games' }, { id: 44320985, title: 'Divergent' }, { id: 76002455, title: 'Harry Potter' }]";
+  async getRelatedBooks(id: string): Promise<any> {
+    let modifiedID = id;
+
+    if(id.startsWith("b") || id.startsWith("B")) {
+      modifiedID = id.substring(1);
+    }
+
+    if(id.endsWith("X") || id.endsWith("x")) {
+      modifiedID = modifiedID.substring(0, modifiedID.length-1);
+    }
+
+    console.log(modifiedID);
+    const relatedBooks = await this.booksRepository.query(`SELECT title FROM books b WHERE record_n=${modifiedID}`);
     return relatedBooks;
   }
 
-  async getRecommendedBooks(userId: string): Promise<string> { //Promise<Book[]> {
-    // Here you would write your logic to fetch recommended books from the database
-    // This is just a placeholder and should be replaced with actual implementation
-    const recommendedBooks = await this.booksRepository.query(`SELECT title FROM books WHERE record_n=${userId}`);
-    //const recommendedBooks = "[{ id: 00001792, title: 'The Song of Achilles' }, { id: 8541096, title: 'Percy Jackson' }, { id: 53318074, title: 'Mirall Trencat' }]";
+  async getRecommendedBooks(userId: string): Promise<any> { 
+    let modifiedID = userId;
+
+    if(userId.startsWith(".p") || userId.startsWith(".P")) {
+      modifiedID = userId.substring(2);
+    }
+
+    if(userId.endsWith("X") || userId.endsWith("x")) {
+      modifiedID = modifiedID.substring(0, modifiedID.length-1);
+    }
+
+    console.log(modifiedID);
+    const recommendedBooks = await this.booksRepository.query(`SELECT title FROM books WHERE record_n=${modifiedID}`);
     return recommendedBooks;
   }
 }
