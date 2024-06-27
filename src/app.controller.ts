@@ -1,12 +1,19 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get, Param } from '@nestjs/common';
+import { BooksService } from './app.service';
 
-@Controller()
+@Controller('recommendations')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: BooksService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get('/books/:bookID')
+  async getBookByID(@Param('bookID') bookID): Promise<string> {
+    const response = await this.appService.getRelatedBooks(bookID);
+    return response;
+  }
+
+  @Get('/users/:userID')
+  async getBookByUserID(@Param('userID') userID): Promise<string> {
+    const response = await this.appService.getRecommendedBooks(userID);
+    return response;
   }
 }
