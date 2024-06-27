@@ -28,8 +28,7 @@ export class BooksService {
       modifiedID = modifiedID.substring(0, modifiedID.length-1);
     }
 
-    console.log(modifiedID);
-    const relatedBooks = await this.booksRepository.query(`SELECT title FROM books b WHERE record_n=${modifiedID}`);
+    const relatedBooks = await this.booksRepository.query(`SELECT title FROM bibliografic b WHERE record_n=${modifiedID}`);
     return relatedBooks;
   }
 
@@ -44,8 +43,12 @@ export class BooksService {
       modifiedID = modifiedID.substring(0, modifiedID.length-1);
     }
 
-    console.log(modifiedID);
-    const recommendedBooks = await this.booksRepository.query(`SELECT title FROM books WHERE record_n=${modifiedID}`);
+    const recommendedBooks = await this.booksRepository.query(`SELECT * FROM usuari WHERE record_n=${modifiedID}`);
     return recommendedBooks;
   }
 }
+
+// bibliografic: llibres
+// usuari
+// exemplar: copia
+// circulacio: trasaccions
