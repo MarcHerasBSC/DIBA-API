@@ -18,33 +18,47 @@ export class BooksService {
   ) {}
 
   async getRelatedBooks(id: string): Promise<any> {
-    let modifiedID = id;
+    try {
+      let modifiedID = id;
 
-    if(id.startsWith("b") || id.startsWith("B")) {
-      modifiedID = id.substring(1);
+      if (id.startsWith('b') || id.startsWith('B')) {
+        modifiedID = id.substring(1);
+      }
+
+      if (id.endsWith('X') || id.endsWith('x')) {
+        modifiedID = modifiedID.substring(0, modifiedID.length - 1);
+      }
+
+      const relatedBooks = await this.booksRepository.query(
+        `SELECT title FROM bibliografic b WHERE record_n=${modifiedID}`,
+      );
+      return relatedBooks;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to get related books');
     }
-
-    if(id.endsWith("X") || id.endsWith("x")) {
-      modifiedID = modifiedID.substring(0, modifiedID.length-1);
-    }
-
-    const relatedBooks = await this.booksRepository.query(`SELECT title FROM bibliografic b WHERE record_n=${modifiedID}`);
-    return relatedBooks;
   }
 
-  async getRecommendedBooks(userId: string): Promise<any> { 
-    let modifiedID = userId;
+  async getRecommendedBooks(userId: string): Promise<any> {
+    try {
+      let modifiedID = userId;
 
-    if(userId.startsWith(".p") || userId.startsWith(".P")) {
-      modifiedID = userId.substring(2);
+      if (userId.startsWith('.p') || userId.startsWith('.P')) {
+        modifiedID = userId.substring(2);
+      }
+
+      if (userId.endsWith('X') || userId.endsWith('x')) {
+        modifiedID = modifiedID.substring(0, modifiedID.length - 1);
+      }
+
+      const recommendedBooks = await this.booksRepository.query(
+        `SELECT * FROM usuari WHERE record_n=${modifiedID}`,
+      );
+      return recommendedBooks;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to get recommended books');
     }
-
-    if(userId.endsWith("X") || userId.endsWith("x")) {
-      modifiedID = modifiedID.substring(0, modifiedID.length-1);
-    }
-
-    const recommendedBooks = await this.booksRepository.query(`SELECT * FROM usuari WHERE record_n=${modifiedID}`);
-    return recommendedBooks;
   }
 }
 
