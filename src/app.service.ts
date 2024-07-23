@@ -32,6 +32,10 @@ export class BooksService {
       const relatedBooks = await this.booksRepository.query(
         `SELECT title FROM bibliografic b WHERE record_n=${modifiedID}`,
       );
+
+      /* TODO: FINISH THIS */
+      const stubRecommendedBooks = {id: id, type: 'books' /*| 'user'*/, recommendations: [], confidence: []}
+
       return relatedBooks;
     } catch (error) {
       console.error(error);
@@ -54,6 +58,10 @@ export class BooksService {
       const recommendedBooks = await this.booksRepository.query(
         `SELECT * FROM usuari WHERE record_n=${modifiedID}`,
       );
+
+      /* TODO: FINISH THIS */
+      const stubRecommendedBooks = {id: userId, type: 'books' /*| 'user'*/, recommendations: [], confidence: []}
+      
       return recommendedBooks;
     } catch (error) {
       console.error(error);
