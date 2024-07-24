@@ -33,10 +33,18 @@ export class BooksService {
         `SELECT title FROM bibliografic b WHERE record_n=${modifiedID}`,
       );
 
-      /* TODO: FINISH THIS */
-      const stubRecommendedBooks = {id: id, type: 'books' /*| 'user'*/, recommendations: [], confidence: []}
+      const date = new Date();
 
-      return relatedBooks;
+      /* TODO: FINISH THIS */
+      const stubRelatedBooks = {
+        id: id, 
+        type: 'books' /*| 'user'*/, 
+        recommendations: ["b19778971", "b19207554", "b11017429", "b1129145X", "b19602406"], 
+        confidence: [0.88, 0.75, 0.62, 0.45, 0.12], 
+        timestamp: date.toISOString()
+      }
+
+      return stubRelatedBooks;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to get related books');
@@ -59,10 +67,18 @@ export class BooksService {
         `SELECT * FROM usuari WHERE record_n=${modifiedID}`,
       );
 
+      const date = new Date();
+
       /* TODO: FINISH THIS */
-      const stubRecommendedBooks = {id: userId, type: 'books' /*| 'user'*/, recommendations: [], confidence: []}
+      const stubRecommendedBooks = {
+        id: userId, 
+        type: /*'books' |*/ 'user', 
+        recommendations: ["b19778971", "b19207554", "b11017429", "b1129145X", "b19602406"], 
+        confidence: [0.88, 0.75, 0.62, 0.45, 0.12], 
+        timestamp: date.toISOString()
+      }
       
-      return recommendedBooks;
+      return stubRecommendedBooks;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to get recommended books');
