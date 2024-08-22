@@ -29,27 +29,37 @@ export class BooksService {
         modifiedID = modifiedID.substring(0, modifiedID.length - 1);
       }
 
-      const relatedBooks = await this.booksRepository.query(
+      const relatedBooks = [
+        {bookId: "b19778971", confidence: null}, 
+        {bookId: "b19207554", confidence: null},
+        {bookId: "b11017429", confidence: null},
+        {bookId: "b1129145x", confidence: null},
+        {bookId: "b19602406", confidence: null}
+      ];
+      /*await this.booksRepository.query(
         `SELECT title FROM bibliografic b WHERE record_n=${modifiedID}`,
-      );
+      );*/
 
       const date = new Date();
 
-      /* TODO: FINISH THIS */
-      const stubRelatedBooks = {
-        id: id, 
-        type: 'books' /*| 'user'*/, 
-        recommendations: ["b19778971", "b19207554", "b11017429", "b1129145X", "b19602406"], 
-        confidence: [0.88, 0.75, 0.62, 0.45, 0.12], 
+      const reply = {
+        id: id,
+        type: 'books',
+        recommendations: relatedBooks,
         timestamp: date.toISOString()
       }
 
-      return stubRelatedBooks;
+      return reply;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to get related books');
     }
   }
+
+  formatBookId(rawId) {
+    // 10000000 has 8 digits. we need to add an x to ids with 7.
+    return rawId >= 10000000 ? `b${rawId}` : `b${rawId}x`;
+  };
 
   async getRecommendedBooks(userId: string): Promise<any> {
     try {
@@ -63,22 +73,25 @@ export class BooksService {
         modifiedID = modifiedID.substring(0, modifiedID.length - 1);
       }
 
-      const recommendedBooks = await this.booksRepository.query(
-        `SELECT * FROM usuari WHERE record_n=${modifiedID}`,
+      const recommendations = await this.booksRepository.query(
+        `SELECT * FROM usuari_recommendation(${modifiedID},5);`,
+      );
+
+      /** Add b || x to ids */
+      const formatedRecommendations = recommendations.map((elem) => 
+        ({bookId: this.formatBookId(elem.recommended), confidence: Number(elem.confidence.toFixed(2))})
       );
 
       const date = new Date();
 
-      /* TODO: FINISH THIS */
-      const stubRecommendedBooks = {
+      const recommendedBooks = {
         id: userId, 
-        type: /*'books' |*/ 'user', 
-        recommendations: ["b19778971", "b19207554", "b11017429", "b1129145X", "b19602406"], 
-        confidence: [0.88, 0.75, 0.62, 0.45, 0.12], 
+        type: 'user',
+        recommendation: formatedRecommendations,
         timestamp: date.toISOString()
-      }
+      };
       
-      return stubRecommendedBooks;
+      return recommendedBooks;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to get recommended books');
