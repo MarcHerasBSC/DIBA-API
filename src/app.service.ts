@@ -29,16 +29,17 @@ export class BooksService {
         modifiedID = modifiedID.substring(0, modifiedID.length - 1);
       }
 
-      const relatedBooks = [
+      /*const relatedBooks = [
         {bookId: "b19778971", confidence: null}, 
         {bookId: "b19207554", confidence: null},
         {bookId: "b11017429", confidence: null},
         {bookId: "b1129145x", confidence: null},
         {bookId: "b19602406", confidence: null}
-      ];
-      /*await this.booksRepository.query(
-        `SELECT title FROM bibliografic b WHERE record_n=${modifiedID}`,
-      );*/
+      ];*/
+      
+      const relatedBooks = await this.booksRepository.query(
+        `SELECT * FROM bibliografic_recommendation(${modifiedID}, 5);`,
+      );
 
       const date = new Date();
 
