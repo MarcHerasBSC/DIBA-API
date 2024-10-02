@@ -37,9 +37,11 @@ export class BooksService {
         {bookId: "b19602406", confidence: null}
       ];*/
       
-      const relatedBooks = await this.booksRepository.query(
+      let relatedBooks = await this.booksRepository.query(
         `SELECT * FROM bibliografic_recommendation(${modifiedID}, 5);`,
       );
+
+      if(relatedBooks.length < 5) relatedBooks = fillRecommendations(relatedBooks);
 
       const date = new Date();
 
@@ -79,9 +81,11 @@ export class BooksService {
       );
 
       /** Add b || x to ids */
-      const formatedRecommendations = recommendations.map((elem) => 
+      let formatedRecommendations = recommendations.map((elem) => 
         ({bookId: this.formatBookId(elem.recommended), confidence: Number(elem.confidence.toFixed(2))})
       );
+
+      if(formatedRecommendations.length < 5) formatedRecommendations = fillRecommendations(formatedRecommendations);
 
       const date = new Date();
 
@@ -100,6 +104,12 @@ export class BooksService {
   }
 }
 
+
+function fillRecommendations(relatedBooks: any): any {
+  const missingRecomendations = 5 - relatedBooks.length;
+
+  return relatedBooks;
+}
 // bibliografic: llibres
 // usuari
 // exemplar: copia
