@@ -41,7 +41,7 @@ export class BooksService {
         `SELECT * FROM bibliografic_recommendation(${modifiedID}, 5);`,
       );
 
-      if(relatedBooks.length < 5) relatedBooks = fillRecommendations(relatedBooks);
+      if(relatedBooks.length < 5) relatedBooks = await this.fillRecommendations(relatedBooks);
 
       const date = new Date();
 
@@ -58,11 +58,6 @@ export class BooksService {
       throw new Error('Failed to get related books');
     }
   }
-
-  formatBookId(rawId) {
-    // 10000000 has 8 digits. we need to add an x to ids with 7.
-    return rawId >= 10000000 ? `b${rawId}` : `b${rawId}x`;
-  };
 
   async getRecommendedBooks(userId: string): Promise<any> {
     try {
@@ -84,9 +79,10 @@ export class BooksService {
       let formatedRecommendations = recommendations.map((elem) => 
         ({bookId: this.formatBookId(elem.recommended), confidence: Number(elem.confidence.toFixed(2))})
       );
-
-      if(formatedRecommendations.length < 5) formatedRecommendations = fillRecommendations(formatedRecommendations);
-
+      
+      //formatedRecommendations = [];
+      if(formatedRecommendations.length < 5) formatedRecommendations = await this.fillRecommendations(formatedRecommendations);
+      
       const date = new Date();
 
       const recommendedBooks = {
@@ -102,15 +98,66 @@ export class BooksService {
       throw new Error('Failed to get recommended books');
     }
   }
+  
+  async fillRecommendations(relatedBooks: any): Promise<any> {
+    const missingRecomendations = 5 - relatedBooks.length;
+    const topBooksList = await this.booksRepository.query(
+      "SELECT bib_id FROM top_bibs ORDER BY tot_chkout DESC"
+    );
+    let response = relatedBooks;
+
+    for (let i = 0; i < missingRecomendations; i++) {
+      const possibleRec = this.findYValues(Math.random()*topBooksList.length-1);
+      if(response.findIndex((elem) => elem.recommended === this.formatBookId(topBooksList[possibleRec].bib_id)) === -1) {
+        console.log(topBooksList[possibleRec].bib_id);
+        response.push({recommended: this.formatBookId(topBooksList[possibleRec].bib_id), confidence: null});
+      }
+      else {
+        let j = 1;
+        while(response.findIndex((elem) => elem.recommended === this.formatBookId(topBooksList[possibleRec+j].bib_id)) !== -1) {
+          j++;
+          if(possibleRec + j >= topBooksList.length) {
+            j = -possibleRec;
+          }
+        }
+        console.log(topBooksList[possibleRec+j].bib_id);
+        response.push({recommended: this.formatBookId(topBooksList[possibleRec+j].bib_id), confidence: null});
+      }
+    }
+    console.log(response);
+    return response;
+  }
+  // bibliografic: llibres
+  // usuari
+  // exemplar: copia
+  // circulacio: trasaccions
+
+  findYValues(x) {
+    const radius = 49;
+    const centerX = 0;
+    const centerY = 49;
+
+    if (x > centerX + radius || x < centerX - radius) {
+      console.log("No solutions for the given x value.");
+    }
+
+    let y1 = (98 + Math.sqrt(98 * 98 - 4 * x * x)) / 2;
+    let y2 = (98 - Math.sqrt(98 * 98 - 4 * x * x)) / 2;
+
+    if (y1 <= 49) {
+      return Math.round(y1);
+    }
+    else if (y2 <= 49) {
+      return Math.round(y2);
+    }
+    else {
+      console.log("No valid y values for x = " + x + " with y >= 1.");
+      return null;
+    }
+  }
+
+  formatBookId(rawId) {
+    // 10000000 has 8 digits. we need to add an x to ids with 7.
+    return rawId >= 10000000 ? `b${rawId}` : `b${rawId}x`;
+  };
 }
-
-
-function fillRecommendations(relatedBooks: any): any {
-  const missingRecomendations = 5 - relatedBooks.length;
-
-  return relatedBooks;
-}
-// bibliografic: llibres
-// usuari
-// exemplar: copia
-// circulacio: trasaccions
