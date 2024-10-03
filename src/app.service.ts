@@ -77,10 +77,9 @@ export class BooksService {
 
       /** Add b || x to ids */
       let formatedRecommendations = recommendations.map((elem) => 
-        ({bookId: this.formatBookId(elem.recommended), confidence: Number(elem.confidence.toFixed(2))})
+        ({bookId: this.formatBookId(elem.recommended), confidence: Number(elem.confidence?.toFixed(2)), source: "AI"})
       );
       
-      //formatedRecommendations = [];
       if(formatedRecommendations.length < 5) formatedRecommendations = await this.fillRecommendations(formatedRecommendations);
       
       const date = new Date();
@@ -109,7 +108,7 @@ export class BooksService {
     for (let i = 0; i < missingRecomendations; i++) {
       const possibleRec = this.findYValues(Math.random()*topBooksList.length-1);
       if(response.findIndex((elem) => elem.recommended === this.formatBookId(topBooksList[possibleRec].bib_id)) === -1) {
-        response.push({recommended: this.formatBookId(topBooksList[possibleRec].bib_id), confidence: null});
+        response.push({recommended: this.formatBookId(topBooksList[possibleRec].bib_id), confidence: null, source: "popular"});
       }
       else {
         let j = 1;
@@ -119,7 +118,7 @@ export class BooksService {
             j = -possibleRec;
           }
         }
-        response.push({recommended: this.formatBookId(topBooksList[possibleRec+j].bib_id), confidence: null});
+        response.push({recommended: this.formatBookId(topBooksList[possibleRec+j].bib_id), confidence: null, source: "popular"});
       }
     }
     return response;
