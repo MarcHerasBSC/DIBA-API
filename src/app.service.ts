@@ -109,7 +109,6 @@ export class BooksService {
     for (let i = 0; i < missingRecomendations; i++) {
       const possibleRec = this.findYValues(Math.random()*topBooksList.length-1);
       if(response.findIndex((elem) => elem.recommended === this.formatBookId(topBooksList[possibleRec].bib_id)) === -1) {
-        console.log(topBooksList[possibleRec].bib_id);
         response.push({recommended: this.formatBookId(topBooksList[possibleRec].bib_id), confidence: null});
       }
       else {
@@ -120,11 +119,9 @@ export class BooksService {
             j = -possibleRec;
           }
         }
-        console.log(topBooksList[possibleRec+j].bib_id);
         response.push({recommended: this.formatBookId(topBooksList[possibleRec+j].bib_id), confidence: null});
       }
     }
-    console.log(response);
     return response;
   }
   // bibliografic: llibres
